@@ -1,0 +1,13 @@
+fastapi
+fastapi-cli
+llama-index-vector-stores-supabase
+llama-index-llms-groq
+llama-index
+python-dotenv
+python-multipart
+supabase
+pytest
+loguru
+torch
+gradio
+requests
