@@ -91,11 +91,12 @@ async def complete_last_message(request: list[ChatMessage], config: Config = Dep
         [str] -- [Response from llm model]
     """
 
-    messages = [
-        ChatMessage(
-            role="system", content=SYSTEM_PROMPT
-        )
-    ]
+    # messages = [
+    #     ChatMessage(
+    #         role="system", content=SYSTEM_PROMPT
+    #     )
+    # ]
+    messages = []
 
     conversation = []
     for message in request:
@@ -133,7 +134,13 @@ async def process_contextual_chat(
     """
 
     try:
-        message = await complete_last_message(request, config)
+        # message = await complete_last_message(request, config)
+        uery = ""
+        for message in request:
+            # if len(request) -1:
+            query = message.content
+
+
 
         config.supabase.schema("vecs").table(collection_name).select("*").limit(
             1
@@ -145,7 +152,7 @@ async def process_contextual_chat(
 
         index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
         query_engine = index.as_query_engine(llm=config.llm)
-        response = query_engine.query(message.content)
+        response = query_engine.query(query)
         return response
 
     except Exception as e:
