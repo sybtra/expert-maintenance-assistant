@@ -17,7 +17,9 @@ class Config:
             "SUPABASE_URL",
             "SUPABASE_KEY",
             "SUPABASE_PG_CONNECTION_STRING",
-            "FASTAPI_URL"
+            "FASTAPI_URL",
+            "APP_MODEL",
+            "DB_NAME"
         ]
         self.APP_GROQ_MODEL = None
         self.GROQ_API_KEY = None
@@ -28,6 +30,8 @@ class Config:
 
         self.DEBUG = None
         self.FASTAPI_URL = None
+        self.APP_MODEL = None
+        self.DB_NAME = None
 
         self.llm = None
         self.supabase = None
@@ -50,6 +54,8 @@ class Config:
             )
             cls._instance.FASTAPI_URL = os.getenv("FASTAPI_URL")
 
+            cls._instance.APP_MODEL = os.getenv("APP_MODEL")
+            cls._instance.DB_NAME = os.getenv("DB_NAME")
 
             cls._instance.validate()
             cls._instance.load_llm()

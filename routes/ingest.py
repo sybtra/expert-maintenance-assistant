@@ -2,16 +2,22 @@ from fastapi import APIRouter, HTTPException, File, UploadFile, Body, Depends
 from typing import List
 from llama_index.core import Document, StorageContext, VectorStoreIndex
 from llama_index.vector_stores.supabase import SupabaseVectorStore
+from langchain_ollama import OllamaEmbeddings
 
 from config import Config, get_config
+import os
+from utils.DocumentExtractor import  DocumentExtractor
+from utils.app_langchain.data_parser import parse_data
+from utils.app_langchain.process_vector import process_vector
+from langchain_chroma import Chroma
 
 router = APIRouter()
 
 
-@router.post("/ingest/{collection_name}", tags=["Documents"])
+@router.post("/ingest", tags=["Documents"])
 async def process_ingest(
-    collection_name: str,
-    uid: str = Body(...),
+    # collection_name: str,
+    # uid: str = Body(...),
     files: List[UploadFile] = File(...),
     config: Config = Depends(get_config),
 ):
@@ -28,28 +34,17 @@ async def process_ingest(
     Returns:
         [dict] -- [message]
     """
+    extractor = DocumentExtractor()
 
     try:
-        documents = []
-        for file in files:
-            content = file.file.read()
-            documents.append(
-                Document(text=content, metadata={"filename": file.filename, "uid": uid})
-            )
+        embeddings = OllamaEmbeddings(model=get_config().APP_MODEL)
 
-        if len(documents) == 0:
-            raise HTTPException(status_code=400, detail=f"No files found")
-        vector_store = SupabaseVectorStore(
-            postgres_connection_string=(config.SUPABASE_PG_CONNECTION_STRING),
-            # name of the collection in the database, as a table with a vector schema
-            collection_name=collection_name,
-        )
-        storage_context = StorageContext.from_defaults(vector_store=vector_store)
-        VectorStoreIndex.from_documents(documents, storage_context=storage_context)
+        if os.path.exists(config.DB_NAME):
+            Chroma(persist_directory=config.DB_NAME, embedding_function=embeddings).delete_collection()
+        content = await extractor.extract_content(files)
+        parsed_data = parse_data(content)
+        vectorstore = await process_vector(parsed_data)
 
-        return {
-            "message": f"User {uid} successfully ingested {len(files)} files into collection {collection_name}"
-        }
-
+        return {"content": vectorstore._collection_name}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Server error: {str(e)}") from e

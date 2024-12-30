@@ -34,3 +34,4 @@ archive.zip
 
 /notebooks/data/**
 !/notebooks/data/.gitkeep
+chroma-vecs-store

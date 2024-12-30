@@ -11,3 +11,15 @@ loguru
 torch
 gradio
 requests
+langchain
+langchain_community
+langchain-cli
+langchain_ollama 
+langchain_chroma 
+chromadb
+python-magic
+lxml
+docx2txt
+PyPDF2
+markdown
+pysqlite3-binary 
