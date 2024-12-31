@@ -17,4 +17,6 @@ lxml
 docx2txt
 PyPDF2
 markdown
-pysqlite3-binary 
+pysqlite3-binary
+pdfminer.six
+unstructured[docx]

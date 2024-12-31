@@ -1,7 +1,3 @@
-from llama_index.llms.groq import Groq
-
-from supabase import create_client
-
 import os
 import loguru
 import dotenv
@@ -58,8 +54,8 @@ class Config:
             cls._instance.DB_NAME = os.getenv("DB_NAME")
 
             cls._instance.validate()
-            cls._instance.load_llm()
-            cls._instance.load_supabase()
+            # cls._instance.load_llm()
+            # cls._instance.load_supabase()
         return cls._instance
 
     def validate(self):
@@ -68,11 +64,11 @@ class Config:
             loguru.logger.error(f"Missing environment variables: {missing_vars}")
             exit(0)
 
-    def load_llm(self):
-        self.llm = Groq(model=self.APP_GROQ_MODEL, api_key=self.GROQ_API_KEY)
+    # def load_llm(self):
+    #     self.llm = Groq(model=self.APP_GROQ_MODEL, api_key=self.GROQ_API_KEY)
 
-    def load_supabase(self):
-        self.supabase = create_client(self.SUPABASE_URL, self.SUPABASE_KEY)
+    # def load_supabase(self):
+    #     self.supabase = create_client(self.SUPABASE_URL, self.SUPABASE_KEY)
 
 config = Config.load()
 

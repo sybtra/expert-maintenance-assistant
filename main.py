@@ -1,7 +1,8 @@
 from fastapi import FastAPI
-from fastapi.middleware.wsgi import WSGIMiddleware
-from routes import ingest, delete_collection, delete_document, chat, chat_collection
-import gradio as gr
+from routes import ingest
+import dotenv
+dotenv.load_dotenv()
+
 app = FastAPI()
 
 tags_metadata = [
@@ -18,8 +19,8 @@ tags_metadata = [
 app.openapi_tags = tags_metadata
 
 app.include_router(ingest.router)
-app.include_router(delete_document.router)
-app.include_router(delete_collection.router)
+# app.include_router(delete_document.router)
+# app.include_router(delete_collection.router)
 
-app.include_router(chat.router)
-app.include_router(chat_collection.router)
+# app.include_router(chat.router)
+# app.include_router(chat_collection.router)
