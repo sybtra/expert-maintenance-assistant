@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routes import ingest
+from routes import ingest, chat
 import dotenv
 dotenv.load_dotenv()
 
@@ -22,5 +22,5 @@ app.include_router(ingest.router)
 # app.include_router(delete_document.router)
 # app.include_router(delete_collection.router)
 
-# app.include_router(chat.router)
+app.include_router(chat.router)
 # app.include_router(chat_collection.router)
