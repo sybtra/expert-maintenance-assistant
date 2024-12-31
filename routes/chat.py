@@ -1,10 +1,10 @@
 import loguru
 from typing import Union, List
 from fastapi import APIRouter, HTTPException, Depends
-
-# from llama_index.core.llms import ChatMessage
-# from llama_index.core import VectorStoreIndex
-# from llama_index.vector_stores.supabase import SupabaseVectorStore
+from langchain.memory import ConversationBufferMemory
+from langchain_chroma import Chroma
+from langchain_ollama import OllamaEmbeddings
+from langchain.chains import ConversationalRetrievalChain
 from config import Config, get_config
 from utils.message_schema import  Message
 
@@ -30,11 +30,26 @@ async def process_chat(
     """
 
     try:
+        memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
+        vector_store = Chroma(
+            collection_name=collection_name,
+            embedding_function=OllamaEmbeddings(model=config.APP_MODEL),
+            persist_directory=config.DB_NAME
+        )
+        # retriever = vector_store.as_retriever(
+        #     search_type="mmr",
+        #     search_kwargs={"k": 1, "fetch_k": 2, "lambda_mult": 0.5},
+        # )
+        retriever = vector_store.as_retriever()
+        conversation_chain = ConversationalRetrievalChain.from_llm(llm=config.llm, retriever=retriever, memory=memory)
+        query = ""
+
         messages = []
         for message in request:
-            messages.append({"role": message.role, "content": message.content})
+            query = message.content
+            # messages.append({"role": message.role, "content": message.content})
+        response = conversation_chain.invoke({"question":query})
 
-        response = config.llm.invoke(messages)
-        return response
+        return response["answer"]
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Server error: {str(e)}") from e
