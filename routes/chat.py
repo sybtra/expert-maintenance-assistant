@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Body
 from langchain.memory import ConversationBufferMemory
 from langchain_chroma import Chroma
 from langchain_ollama import OllamaEmbeddings
@@ -10,7 +10,7 @@ router = APIRouter()
 @router.post("/chat/{collection_name}", tags=["Chat"])
 async def process_chat(
     collection_name: str,
-    query: str,
+    query: str = Body(...),
     config: Config = Depends(get_config),
 ):
     """POST Endpoint to process chat

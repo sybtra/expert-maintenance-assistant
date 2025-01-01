@@ -9,12 +9,8 @@ def chat_with_collection(message, history, collection_name):
         collection_name: Nom de la collection à utiliser
     """
     url = f"http://localhost:8000/chat/{collection_name}"
-    params = {
-        "query": message
-    }
-    
     try:
-        response = requests.post(url, params=params)
+        response = requests.post(url, json=message)
         if response.status_code == 200:
             return response.text
         else:
