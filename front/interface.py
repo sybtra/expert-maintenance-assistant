@@ -9,13 +9,13 @@ def create_gradio_app():
         # Section d'ingestion
         with gr.Tab("Ingestion de Documents"):
             collection_name = gr.Textbox(label="Nom de la collection")
-            uid = gr.Textbox(label="Identifiant utilisateur")
+            # uid = gr.Textbox(label="Identifiant utilisateur")
             files = gr.File(label="Fichiers à ingérer", file_types=[".txt"], file_count="multiple")
             ingest_button = gr.Button("Ingérer")
             ingest_output = gr.Textbox(label="Résultat d'ingestion")
             ingest_button.click(
                 ingest_documents,
-                inputs=[collection_name, uid, files],
+                inputs=[collection_name, files],
                 outputs=[ingest_output]
             )
         
